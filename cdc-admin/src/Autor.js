@@ -3,6 +3,7 @@ import $ from 'jquery';
 import InputCustomizado from './componentes/InputCustomizado';
 import InputSubmitCustomizado from './componentes/InputSubmitCustomizado';
 import PubSub from 'pubsub-js';
+import TratadorErros from './TratadorErros';
 
 //FormularioAutor -> callback function(atualizaListagem)
 class FormularioAutor extends Component {
@@ -28,6 +29,9 @@ class FormularioAutor extends Component {
             success: function (data) {
                 PubSub.publish('atualiza-lista-autores', data);
             }, error: function (err) {
+                if(err.status === 400){
+                    new TratadorErros().publicaErros(err.responseJSON);
+                }
                 console.log("erro");
             }
         });
@@ -96,6 +100,7 @@ class TabelaAutores extends Component {
     }
 }
 
+//Classe criada para juntar os dois componentes do autor.
 export default class AutorBox extends Component {
 
     constructor() {
@@ -103,6 +108,7 @@ export default class AutorBox extends Component {
         this.state = { lista: [] };
     }
 
+    //Executa depois da tela ter sido carregada.
     componentDidMount() {
         $.ajax({
             url: 'https://cdc-react.herokuapp.com/api/autores',
@@ -112,6 +118,7 @@ export default class AutorBox extends Component {
             }.bind(this)
         });
 
+        //Escutando o canal atualiza-lista-autores 
         PubSub.subscribe('atualiza-lista-autores', function(topico, novaListagem){
             this.setState({lista: novaListagem})
         }.bind(this));
