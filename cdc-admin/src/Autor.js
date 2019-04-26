@@ -27,12 +27,16 @@ class FormularioAutor extends Component {
             type: 'post',
             data: JSON.stringify({ nome: this.state.nome, email: this.state.email, senha: this.state.senha }),
             success: function (data) {
-                PubSub.publish('atualiza-lista-autores', data);
-            }, error: function (err) {
-                if(err.status === 400){
+                PubSub.publish('atualiza-lista-autores', data.reverse().slice(0, 10));
+                this.setState({ nome: '', email: '', senha: '' });
+            }.bind(this),
+            error: function (err) {
+                if (err.status === 400) {
+                    //Não é componente, é uma classe!
                     new TratadorErros().publicaErros(err.responseJSON);
                 }
-                console.log("erro");
+            }, beforeSend: function () {
+                PubSub.publish('limpa-erros', {});
             }
         });
     }
@@ -119,8 +123,8 @@ export default class AutorBox extends Component {
         });
 
         //Escutando o canal atualiza-lista-autores 
-        PubSub.subscribe('atualiza-lista-autores', function(topico, novaListagem){
-            this.setState({lista: novaListagem})
+        PubSub.subscribe('atualiza-lista-autores', function (topico, novaListagem) {
+            this.setState({ lista: novaListagem })
         }.bind(this));
 
     }
