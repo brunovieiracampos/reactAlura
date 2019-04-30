@@ -3,14 +3,19 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { BrowserRouter, Switch, Route,  } from 'react-router-dom'
+import { BrowserRouter, Route } from 'react-router-dom'
 import AutorBox from './Autor';
+import Home from './Home';
 
 ReactDOM.render((<BrowserRouter>
-    <Switch>
-        <Route exact path="/" component={App} />
-        <Route exact path="/autor" component={AutorBox} />
-    </Switch>
+    <div>
+        <App>
+            <Route exact path="/" />
+            <Route path="/home" component={Home} />
+            <Route path="/autor" component={AutorBox} />
+            <Route path="/livro" />
+        </App>
+    </div>
 </BrowserRouter>
 ), document.getElementById('root'));
 
